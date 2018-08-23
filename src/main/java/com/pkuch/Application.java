@@ -10,10 +10,14 @@ import java.io.IOException;
 public class Application {
     public static void main(String[] args) throws IOException {
         JestRestClient jestRestClient = JestRestClient.getInstance();
+        int rating = 4;
 
-        JestResult reviewsWithRating = jestRestClient.getReviewsWithRating(4);
+        JestResult reviewsWithRating = jestRestClient.getReviewsWithRating(rating);
 
-        System.out.println(reviewsWithRating.getJsonObject().getAsJsonObject("hits").get("total"));
+        System.out.println("***********************************************************");
+        System.out.println("Reviews with rating " + rating + ": "
+                + reviewsWithRating.getJsonObject().getAsJsonObject("hits").get("total"));
+        System.out.println("***********************************************************");
 
 //        {
 //            "took": 17,
@@ -24,7 +28,7 @@ public class Application {
 //                    "failed": 0
 //         },
 //            "hits": {
-//            "total": 1668,
+//            "total": 1668,                    <--- here is this
 //                    "max_score": 3.463488,
 //                    "hits": [
 //                          { ... }
@@ -33,9 +37,13 @@ public class Application {
 
         JestResult ratingHistogram = jestRestClient.getHistogramOfAllRatings();
 
-        Histogram histogram = new ObjectMapper().readValue(ratingHistogram.getJsonString(), Histogram.class);
+        ObjectMapper mapper = new ObjectMapper();
 
-        System.out.println(histogram);
+        Histogram histogram = mapper.readValue(ratingHistogram.getJsonString(), Histogram.class);
+
+        System.out.println("Histogram of all the ratings:");
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(histogram));
+        System.out.println("***********************************************************");
 
 //        {
 //            "took": 14,
